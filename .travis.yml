@@ -10,7 +10,6 @@ perl:
 addons:
    postgresql: "9.3"
 env:
-  - RELEASE_TESTING: 1
   - DB_TESTING: 1
 before_install:
    - "cpanm DBI"
@@ -19,5 +18,6 @@ before_install:
    - "cpanm Memoize"
    - "cpanm Text::CSV"
    - "cpanm Test::More"
+   - "cpanm Devel::Cover::Report::Coveralls"
 script:
-   perl Makefile.PL && make test && cover -test -report coveralls
+   export RELEASE_TESTING=1 && perl Makefile.PL && make test && cover -test -report coveralls
