@@ -281,13 +281,22 @@ Columns to update (by name)
 
 Key columns (by name)
 
+=item group_stats_by
+
+This is an array of column names for optional stats retrieval and grouping.
+If it is set then we will grab the stats and return them.  Note this has a 
+performance penalty because it means an extra scan of the temp table and an
+extra join against the parent table.  See get_stats for the return value
+information if this is set.
+
 =back
 
 =cut
 
 sub _build_args {
     my ($init_args, $obj) = @_;
-    my @arglist = qw(table insert_cols update_cols key_cols dbh);
+    my @arglist = qw(table insert_cols update_cols key_cols dbh 
+                     tempname group_stats_by);
     return { 
        map {  my $val;
               for my $v ($init_args->{$_}, try { $obj->$_ } ){
@@ -321,7 +330,9 @@ sub upsert {
     copy({(%$args, (table => 'pgobject_bulkloader'))}, @_);
 
     if ($args->{group_stats_by}){
-        $return_value = get_stats({(%$args, (table => 'pgobject_bulkloader'))});
+        $return_value = get_stats(
+                {(%$args, (tempname => 'pgobject_bulkloader'))}
+        );
     }
 
     $dbh->do(statement( %$args, (type => 'upsert', 
@@ -388,15 +399,37 @@ automatically runs this if group_stats_by is set in the argumements hash).
 There is a performance penalty here since an unindexed left join is required 
 between the temp and the normal table.
 
+This function requires tempname, table, and group_stats_by to be set in the
+argument hashref.  The return value is a list of hashrefs with the following 
+keys:
+
+=over
+
+=item stats
+
+Hashref with keys inserts and updates including numbers of rows.
+
+=item keys
+
+Hashref for key columns and their values, by name
+
+=back
+
 =cut
 
 sub get_stats {
     my ($args) = shift;
     $args = shift if $args eq __PACKAGE__;
+    try {
+       no warnings;
+       no strict;
+       $args->can('foo');
+       unshift @_, $args; # args is an object
+    };
     $args = _build_args($args, $_[0]);
     my $dbh = $args->{dbh};
 
-    my $returnval = { 
+    my $returnval = [
           map { 
             my @row = @$_;
             { stats => {
@@ -407,8 +440,8 @@ sub get_stats {
                  map { $_ => shift @row } @{$args->{group_stats_by}}
               },
             } 
-          } $dbh->selectall_arrayref(statement(%$args, (type => 'stats')))
-    };
+          } @{ $dbh->selectall_arrayref(statement(%$args, (type => 'stats'))) }
+    ];
 }
 
 =head1 AUTHOR
