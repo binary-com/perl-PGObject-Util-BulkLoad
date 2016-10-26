@@ -14,12 +14,14 @@ addons:
 env:
   - DB_TESTING: 1
 before_install:
-   - "cpanm DBI"
-   - "cpanm DBD::Pg"
-   - "cpanm Try::Tiny"
-   - "cpanm Memoize"
-   - "cpanm Text::CSV"
-   - "cpanm Test::More"
-   - "cpanm Devel::Cover::Report::Coveralls"
+   - "cpanm -qn DBI"
+   - "cpanm -qn DBD::Pg"
+   - "cpanm -qn Try::Tiny"
+   - "cpanm -qn Memoize"
+   - "cpanm -qn Text::CSV"
+   - "cpanm -qn Test::More"
+   - "cpanm -qn Test::Requires::Git"
+   - "cpanm -qn Devel::Cover::Report::Codecov"
+
 script:
-   export RELEASE_TESTING=1 && perl Makefile.PL && make test && cover -test -report coveralls
+   export RELEASE_TESTING=1 && perl Makefile.PL && make test && cover -test -report codecov
