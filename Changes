@@ -1,5 +1,8 @@
 Revision history for PGObject-Util-BulkLoad
 
+{{$NEXT}}
+        Switch to dzil
+
 0.04    2014-09-05
         Includes the ability to grab statistics on expected inserts and updates
         grouped by arbitrary columns
