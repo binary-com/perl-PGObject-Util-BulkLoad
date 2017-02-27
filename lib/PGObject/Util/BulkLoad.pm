@@ -15,7 +15,7 @@ PGObject::Util::BulkLoad - Bulk load records into PostgreSQL
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 SYNOPSIS
 
@@ -301,7 +301,7 @@ sub _build_args {
     };
 }
 
-sub upsert { ## no critic (ArgUnpacking)
+sub upsert {    ## no critic (ArgUnpacking)
     my ($args) = shift;
     $args = shift if $args eq __PACKAGE__;
     try {
@@ -375,12 +375,12 @@ sub _to_csv {
     );
 }
 
-sub copy { ## no critic (ArgUnpacking)
+sub copy {    ## no critic (ArgUnpacking)
     my ($args) = shift;
     $args = shift if $args eq __PACKAGE__;
     try {
-        no warnings; ## no critic (ProhibitNoWarnings)
-        no strict; ## no critic (ProhibitNoStrict)
+        no warnings;    ## no critic (ProhibitNoWarnings)
+        no strict;      ## no critic (ProhibitNoStrict)
         $args->can('foo');
         unshift @_, $args;    # args is an object
     };
@@ -421,12 +421,12 @@ Hashref for key columns and their values, by name
 
 =cut
 
-sub get_stats { ## no critic (ArgUnpacking)
+sub get_stats {    ## no critic (ArgUnpacking)
     my ($args) = shift;
     $args = shift if $args eq __PACKAGE__;
     try {
-        no warnings; ## no critic (ProhibitNoWarnings)
-        no strict; ## no critic (ProhibitNoStrict)
+        no warnings;    ## no critic (ProhibitNoWarnings)
+        no strict;      ## no critic (ProhibitNoStrict)
         $args->can('foo');
         unshift @_, $args;    # args is an object
     };
