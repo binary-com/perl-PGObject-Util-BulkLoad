@@ -8,7 +8,7 @@ sub normalize_whitespace {
 }
 
 my $convert1 = {
-   insert_cols => [qw(foo bar baz)], 
+   insert_cols => [qw(foo bar baz)],
    update_cols => [qw(foo bar)],
    key_cols    => ['baz'],
 group_stats_by => ['foo'],
@@ -26,8 +26,8 @@ group_stats_by => ['foo'],
                   INSERT INTO "foo" ("foo", "bar", "baz")
                   SELECT "foo", "bar", "baz" FROM "tfoo"
                   WHERE ROW("tfoo"."baz") NOT IN (SELECT UP."baz" FROM UP)',
-           stats => 
-                   'SELECT "tfoo"."foo", 
+           stats =>
+                   'SELECT "tfoo"."foo",
                      SUM(CASE WHEN ROW("foo"."baz") IS NULL THEN 1 ELSE 0 END)
                           AS pgobject_bulkload_inserts,
                      SUM(CASE WHEN ROW("foo"."baz") IS NULL THEN 0 ELSE 1 END)
@@ -35,7 +35,7 @@ group_stats_by => ['foo'],
                      FROM "tfoo"
                 LEFT JOIN "foo" USING ("baz")
                  GROUP BY "tfoo"."foo"',
-                   
+
                   },
 };
 
@@ -58,7 +58,7 @@ group_stats_by => ['foo', 'bar'],
                   INSERT INTO "foo" ("foo", "bar", "baz")
                   SELECT "foo", "bar", "baz" FROM "tfoo"
                   WHERE ROW("tfoo"."bar", "tfoo"."baz") NOT IN (SELECT UP."bar", UP."baz" FROM UP)',
-           stats => 
+           stats =>
                    'SELECT "tfoo"."foo", "tfoo"."bar",
                      SUM(CASE WHEN ROW("foo"."bar", "foo"."baz") IS NULL THEN 1 ELSE 0 END)
                           AS pgobject_bulkload_inserts,
@@ -89,7 +89,7 @@ group_stats_by => [qw(b"a"z)],
                   INSERT INTO "foo" ("fo""o""", "bar", "b""a""z")
                   SELECT "fo""o""", "bar", "b""a""z" FROM "tfoo"
                   WHERE ROW("tfoo"."b""a""z") NOT IN (SELECT UP."b""a""z" FROM UP)',
-           stats => 
+           stats =>
                    'SELECT "tfoo"."b""a""z",
                      SUM(CASE WHEN ROW("foo"."b""a""z") IS NULL THEN 1 ELSE 0 END)
                           AS pgobject_bulkload_inserts,
@@ -103,7 +103,7 @@ group_stats_by => [qw(b"a"z)],
 
 for my $stype (qw(temp copy upsert stats)){
     my $iter = 0;
-    is(normalize_whitespace(PGObject::Util::BulkLoad::statement(%$_)), 
+    is(normalize_whitespace(PGObject::Util::BulkLoad::statement(%$_)),
        normalize_whitespace($_->{stmt}->{$stype}),
        "$stype for convert$_->{iter}")
         for map {
